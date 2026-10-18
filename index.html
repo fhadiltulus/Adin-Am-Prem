@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Adinn AM Premium</title>
+  <meta name="theme-color" content="#020617">
+  <script>
+    // Terapkan tema tersimpan sedini mungkin biar gak ada kedipan warna salah saat halaman baru dibuka.
+    (function () {
+      try {
+        var t = localStorage.getItem("appTheme");
+        if (t && t !== "blue") document.documentElement.setAttribute("data-theme", t);
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==================== AUTH SCREEN ==================== -->
+  <div id="authScreen" class="screen">
+    <div class="container">
+      <div class="header">
+        <div class="logo">
+          <img src="logo.png" alt="Adinn AM Premium" class="logo-img">
+          <div class="logo-text">Adinn AM Premium</div>
+        </div>
+        <p class="subtitle">Aktivasi Alight Motion Premium, langsung pakai.</p>
+        <div class="badge-live"><span class="dot"></span> Server Online</div>
+      </div>
+
+      <div class="card">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Masuk</button>
+          <button class="auth-tab" data-tab="register">Daftar</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="loginForm" class="auth-form active">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Username / Email</label>
+            <input type="text" id="loginUser" class="input" placeholder="Username atau email" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="loginPass" class="input" placeholder="Password" autocomplete="current-password">
+          </div>
+          <div id="loginMsg" class="message" role="alert"></div>
+          <button id="loginBtn" class="btn btn-primary">
+            <i class="fas fa-right-to-bracket"></i> Masuk
+          </button>
+          <button id="forgotPassBtn" type="button" class="link-btn">Lupa Password?</button>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="registerForm" class="auth-form">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Username</label>
+            <input type="text" id="regUser" class="input" placeholder="Buat username" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" id="regEmail" class="input" placeholder="email@contoh.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="regPass" class="input" placeholder="Minimal 6 karakter" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Konfirmasi Password</label>
+            <input type="password" id="regPass2" class="input" placeholder="Ulangi password" autocomplete="new-password">
+          </div>
+          <div class="bonus-box">
+            <i class="fas fa-circle-info"></i>
+            <span>Setelah daftar, order paket <b>Silver/Gold</b> dulu di menu Paket sebelum bisa aktivasi AM Prem.</span>
+          </div>
+          <div id="regMsg" class="message" role="alert"></div>
+          <button id="registerBtn" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Daftar Sekarang
+          </button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p class="credit" id="secretTrigger">© 2026 <span>Adinn AM Premium</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN LOGIN MODAL (tersembunyi) ==================== -->
+  <div id="adminLoginModal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <h3><i class="fas fa-user-shield"></i> Login Admin</h3>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email Admin</label>
+        <input type="email" id="adminEmail" class="input" placeholder="Email akun admin" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <input type="password" id="adminPass" class="input" placeholder="Password" autocomplete="current-password">
+      </div>
+      <div id="adminLoginMsg" class="message" role="alert"></div>
+      <button id="adminLoginBtn" class="btn btn-primary">
+        <i class="fas fa-right-to-bracket"></i> Masuk Admin
+      </button>
+      <button id="adminLoginCancel" class="btn btn-ghost" style="width:100%;margin-top:8px;">Batal</button>
+    </div>
+  </div>
+
+  <!-- ==================== LUPA PASSWORD MODAL ==================== -->
+  <div id="forgotPassModal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <h3><i class="fas fa-key"></i> Lupa Password</h3>
+      <p class="modal-desc">Masukkan username atau email akun kamu. Kami akan kirim link untuk atur ulang password ke email tersebut.</p>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Username / Email</label>
+        <input type="text" id="forgotEmail" class="input" placeholder="Username atau email@contoh.com" autocomplete="username">
+      </div>
+      <div id="forgotPassMsg" class="message" role="alert"></div>
+      <button id="forgotPassBtn2" class="btn btn-primary">
+        <i class="fas fa-paper-plane"></i> Kirim Link Reset
+      </button>
+      <button id="forgotPassCancel" class="btn btn-ghost" style="width:100%;margin-top:8px;">Batal</button>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN PANEL SCREEN ==================== -->
+  <div id="adminScreen" class="screen" style="display:none;">
+    <div class="container">
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="logo.png" alt="Logo" class="topbar-logo">
+          <div>
+            <div class="topbar-name">Admin Panel</div>
+            <div class="topbar-user">Adinn AM Premium</div>
+          </div>
+        </div>
+        <button id="adminLogoutBtn" class="btn-icon" title="Keluar Admin">
+          <i class="fas fa-right-from-bracket"></i>
+        </button>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Cari Akun</h2>
+        <p class="card-desc">Cari username / email, lalu aktifkan paket setelah pembayaran dikonfirmasi.</p>
+        <div class="form-group">
+          <input type="text" id="adminSearchInput" class="input" placeholder="Cari username atau email...">
+        </div>
+        <div id="adminUserList" class="admin-user-list"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Atur Harga Paket</h2>
+        <p class="card-desc">Ubah harga paket, langsung berlaku ke semua user saat itu juga.</p>
+        <div class="price-input-grid">
+          <div class="price-input-row silver-tier">
+            <div class="pir-icon"><i class="fas fa-medal"></i></div>
+            <div class="pir-label">Silver</div>
+            <input type="number" id="priceSilverInput" class="input" placeholder="10000" min="0">
+          </div>
+          <div class="price-input-row gold-tier">
+            <div class="pir-icon"><i class="fas fa-crown"></i></div>
+            <div class="pir-label">Gold</div>
+            <input type="number" id="priceGoldInput" class="input" placeholder="15000" min="0">
+          </div>
+          <div class="price-input-row platinum-tier">
+            <div class="pir-icon"><i class="fas fa-gem"></i></div>
+            <div class="pir-label">Platinum</div>
+            <input type="number" id="pricePlatinumInput" class="input" placeholder="Opsional" min="0">
+          </div>
+        </div>
+        <p class="form-hint">Harga dalam Rupiah, tanpa titik/koma. Platinum tidak tampil ke user (hanya catatan admin), tapi ikut tersimpan.</p>
+        <div id="priceAdminMsg" class="message" role="alert"></div>
+        <button id="priceSaveBtn" class="btn btn-primary" style="margin-top:8px;">
+          <i class="fas fa-floppy-disk"></i> Simpan Harga
+        </button>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Kelola Voucher</h2>
+        <p class="card-desc">Buat kode diskon untuk order paket Silver/Gold.</p>
+        <div class="form-group">
+          <label><i class="fas fa-ticket"></i> Kode Voucher</label>
+          <input type="text" id="voucherCodeInput" class="input" placeholder="Contoh: DISKON30" autocomplete="off" style="text-transform:uppercase;">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-percent"></i> Diskon (%)</label>
+          <input type="number" id="voucherDiscountInput" class="input" placeholder="Contoh: 30" min="1" max="99">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-clock"></i> Durasi Berlaku (hari)</label>
+          <input type="number" id="voucherDurationInput" class="input" placeholder="Contoh: 7 (kosongkan = tanpa batas waktu)" min="1">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-hashtag"></i> Maks Pemakaian</label>
+          <input type="number" id="voucherMaxUsesInput" class="input" placeholder="Contoh: 1 (kosongkan = tanpa batas)" min="1">
+        </div>
+        <div id="voucherAdminMsg" class="message" role="alert"></div>
+        <button id="voucherCreateBtn" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Buat Voucher
+        </button>
+        <div id="adminVoucherList" class="admin-user-list" style="margin-top:16px;"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Pengumuman</h2>
+        <p class="card-desc">Kirim info ke semua user, tampil di halaman Beranda mereka.</p>
+        <div class="form-group">
+          <label><i class="fas fa-bullhorn"></i> Isi Pengumuman</label>
+          <textarea id="announceTextInput" class="input" rows="3" placeholder="Contoh: Adin akan update Desember nanti" style="resize:vertical;font-family:inherit;"></textarea>
+        </div>
+        <div id="announceAdminMsg" class="message" role="alert"></div>
+        <button id="announceCreateBtn" class="btn btn-primary">
+          <i class="fas fa-paper-plane"></i> Kirim Pengumuman
+        </button>
+        <div id="adminAnnounceList" class="admin-user-list" style="margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== APP SCREEN ==================== -->
+  <div id="appScreen" class="screen" style="display:none;">
+    <div class="container has-bottom-nav">
+
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="logo.png" alt="Logo" class="topbar-logo">
+          <div>
+            <div class="topbar-name">Adinn AM</div>
+            <div class="topbar-user" id="displayUser">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PAGE: BERANDA ===== -->
+      <div id="pageHome" class="page active">
+        <div id="announcementList"></div>
+
+        <!-- Status Card -->
+        <div class="credit-card">
+          <div class="credit-left">
+            <div class="credit-label">Status Akses</div>
+            <div class="credit-value" id="creditValue">Terkunci</div>
+          </div>
+          <div class="credit-right">
+            <div class="plan-badge" id="planBadge">FREE</div>
+            <div class="plan-expire" id="planExpire">—</div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="quick-action-card qa-activate" id="qaActivate">
+            <i class="fas fa-bolt"></i>
+            <span>Aktivasi AM Prem</span>
+          </button>
+          <button class="quick-action-card qa-package" id="qaPackage">
+            <i class="fas fa-crown"></i>
+            <span>Order Paket</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Cara Kerja</h2>
+          <div class="steps">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text">Order paket <b>Silver</b>, <b>Gold</b> lewat menu Paket.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text">Admin konfirmasi setelah pembayaran diterima.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text">Paket aktif → buat akun AM Prem sepuasnya di menu <b>Aktivitas</b>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PAGE: AKTIVITAS ===== -->
+      <div id="pageActivate" class="page">
+        <div class="card">
+          <h2 class="card-title">Aktivasi Lisensi</h2>
+          <p class="card-desc">Aktivasi hanya bisa dilakukan selama paket Silver, Gold, atau Platinum kamu sedang aktif.</p>
+
+          <div class="steps">
+            <div class="steps-head">
+              <i class="fas fa-list-ol"></i>
+              Cara Pakai
+            </div>
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text">Masukkan <b>Email Akun AM</b> lalu tekan <b>Kirim</b>.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text">Buka email → tahan lama tombol masuk → pilih <b>Salin URL</b>.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text">Tempel Magic Link di bawah, lalu tekan <b>Aktifkan</b>.</div>
+            </div>
+          </div>
+
+          <div id="msgBox" class="message" role="alert"></div>
+
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Email Akun Alight Motion</label>
+            <div class="input-row">
+              <input type="email" id="emailInput" class="input" placeholder="contoh@gmail.com" autocomplete="email" inputmode="email">
+              <button id="sendBtn" class="btn btn-send">Kirim</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fas fa-link"></i> Magic Link (URL)</label>
+            <input type="url" id="magicInput" class="input" placeholder="Tempel URL Magic Link di sini" autocomplete="off">
+          </div>
+
+          <div class="divider"></div>
+
+          <button id="activateBtn" class="btn btn-primary">
+            <span id="btnText"><i class="fas fa-shield-halved"></i> Verifikasi & Aktifkan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== PAGE: PROFIL ===== -->
+      <div id="pageProfile" class="page">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">A</div>
+          <div class="profile-name" id="profileUsername">@username</div>
+          <div class="profile-email" id="profileEmail">email@contoh.com</div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Paket Aktif</h2>
+          <div class="profile-row">
+            <span class="profile-row-label"><i class="fas fa-crown"></i> Paket</span>
+            <span class="plan-badge" id="profilePlanBadge">FREE</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label"><i class="fas fa-calendar"></i> Status</span>
+            <span class="profile-row-value" id="profilePlanExpire">Tidak ada paket aktif</span>
+          </div>
+          <button class="btn btn-primary" id="profileOrderBtn" style="margin-top:14px;">
+            <i class="fas fa-crown"></i> Order Paket
+          </button>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Tampilan</h2>
+          <p class="card-desc">Pilih warna tema aplikasi sesuai selera kamu.</p>
+          <div class="theme-picker">
+            <button class="theme-swatch" data-theme="blue">
+              <span class="ts-preview ts-blue"></span>
+              <span>Sapphire Biru</span>
+              <i class="fas fa-circle-check ts-check"></i>
+            </button>
+            <button class="theme-swatch" data-theme="gold">
+              <span class="ts-preview ts-gold"></span>
+              <span>Gold Premium</span>
+              <i class="fas fa-circle-check ts-check"></i>
+            </button>
+            <button class="theme-swatch" data-theme="red">
+              <span class="ts-preview ts-red"></span>
+              <span>Ruby Merah</span>
+              <i class="fas fa-circle-check ts-check"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Bantuan</h2>
+          <a class="wa-btn" href="https://wa.me/6282286315293?text=Halo%20Admin%2C%20saya%20dari%20Adinn%20AM%20Premium" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i>
+            Hubungi Owner
+          </a>
+        </div>
+
+        <button class="btn btn-logout" id="logoutBtn">
+          <i class="fas fa-right-from-bracket"></i> Keluar Akun
+        </button>
+
+        <p class="credit" style="text-align:center;margin-top:18px;">© 2026 <span>Adinn AM Premium</span></p>
+      </div>
+
+      <!-- ===== SUBPAGE: PAKET (dibuka dari Beranda/Profil) ===== -->
+      <div id="pagePackages" class="page subpage">
+        <div class="subpage-header">
+          <button class="back-btn" id="packagesBackBtn"><i class="fas fa-arrow-left"></i></button>
+          <span>Pilih Paket</span>
+        </div>
+        <div class="card">
+          <p class="card-desc">Kamu butuh paket aktif untuk bisa membuat akun AM Prem. Order paket di bawah, admin akan konfirmasi manual.</p>
+
+          <!-- Voucher -->
+          <div class="voucher-box">
+            <div class="form-group" style="margin-bottom:8px;">
+              <label><i class="fas fa-ticket"></i> Kode Voucher (opsional)</label>
+              <div class="input-row">
+                <input type="text" id="voucherInput" class="input" placeholder="Masukkan kode voucher" autocomplete="off" style="text-transform:uppercase;">
+                <button id="voucherApplyBtn" class="btn btn-send">Pakai</button>
+              </div>
+            </div>
+            <div id="voucherMsg" class="message" role="alert"></div>
+          </div>
+
+          <!-- Silver -->
+          <div class="package-card silver">
+            <div class="pkg-header">
+              <div class="pkg-icon"><i class="fas fa-medal"></i></div>
+              <div>
+                <div class="pkg-name">Silver</div>
+                <div class="pkg-duration">Berlaku 7 hari</div>
+              </div>
+              <div class="pkg-price" id="silverPrice">Rp 10.000</div>
+            </div>
+            <p class="pkg-desc">
+              Dengan paket Silver, kamu bisa membuat akun AM Prem sepuasnya selama 7 hari selagi paket Silver kamu aktif.
+              Kalau masa aktifnya sudah habis, paket Silver kamu akan hilang.
+            </p>
+            <button class="btn btn-pkg" data-plan="silver">
+              <i class="fab fa-whatsapp"></i> Order Silver
+            </button>
+          </div>
+
+          <!-- Gold -->
+          <div class="package-card gold">
+            <div class="pkg-badge-best">TERLARIS</div>
+            <div class="pkg-header">
+              <div class="pkg-icon gold-icon"><i class="fas fa-crown"></i></div>
+              <div>
+                <div class="pkg-name">Gold</div>
+                <div class="pkg-duration">Berlaku 30 hari</div>
+              </div>
+              <div class="pkg-price" id="goldPrice">Rp 15.000</div>
+            </div>
+            <p class="pkg-desc">
+              Dengan paket Gold, kamu bisa membuat akun AM Prem sepuasnya selama 30 hari selagi paket Gold kamu aktif.
+              Kalau masa aktifnya sudah habis, paket Gold kamu akan hilang.
+            </p>
+            <button class="btn btn-pkg gold-btn" data-plan="gold">
+              <i class="fab fa-whatsapp"></i> Order Gold
+            </button>
+          </div>
+
+          <p class="pkg-note">
+            <i class="fas fa-info-circle"></i>
+            Punya kode voucher? Masukkan dulu sebelum order biar harganya otomatis lebih murah. Order lewat WhatsApp, admin akan konfirmasi & aktifkan paket kamu secara manual setelah pembayaran diterima.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <button class="bnav-item active" data-page="home">
+        <i class="fas fa-house"></i>
+        <span>Beranda</span>
+      </button>
+      <button class="bnav-item" data-page="activate">
+        <i class="fas fa-bolt"></i>
+        <span>Aktivitas</span>
+      </button>
+      <button class="bnav-item" data-page="profile">
+        <i class="fas fa-user"></i>
+        <span>Profil</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== PILIH TUJUAN ORDER ==================== -->
+  <div id="orderChoiceModal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <h3><i class="fas fa-paper-plane"></i> Pilih Tujuan Order</h3>
+      <p id="orderChoiceSummary">Paket Silver — Rp 10.000</p>
+      <div class="order-choice-list">
+        <button id="orderChoiceOwner" class="order-choice-btn owner">
+          <span class="ocb-icon"><i class="fas fa-crown"></i></span>
+          <span class="ocb-text">
+            <span class="ocb-title">Order ke Owner</span>
+            <span class="ocb-sub">Adin — pemilik utama</span>
+          </span>
+          <i class="fab fa-whatsapp ocb-wa"></i>
+        </button>
+        <button id="orderChoiceAdmin" class="order-choice-btn admin">
+          <span class="ocb-icon"><i class="fas fa-user-shield"></i></span>
+          <span class="ocb-text">
+            <span class="ocb-title">Order ke Admin</span>
+            <span class="ocb-sub">Admin bawahan owner</span>
+          </span>
+          <i class="fab fa-whatsapp ocb-wa"></i>
+        </button>
+      </div>
+      <button id="orderChoiceCancel" class="btn btn-ghost" style="width:100%;margin-top:12px;">Batal</button>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN INTRO OVERLAY ==================== -->
+  <div id="adminIntroOverlay" class="admin-intro-overlay" style="display:none;">
+    <video id="adminIntroVideo" class="admin-intro-video" src="admin-intro.mp4" playsinline preload="auto"></video>
+    <div class="admin-intro-scrim"></div>
+    <div class="admin-intro-top">
+      <div class="admin-intro-brand">
+        <img src="logo.png" alt="Logo">
+        <span>Adinn AM Premium</span>
+      </div>
+    </div>
+    <div class="admin-intro-caption">
+      <div class="aic-eyebrow"><i class="fas fa-user-shield"></i> Admin Access</div>
+      <h2>Selamat datang kembali, Admin</h2>
+    </div>
+    <div class="admin-intro-actions">
+      <button id="adminIntroMute" class="aic-btn aic-mute-btn" title="Suara">
+        <i class="fas fa-volume-xmark"></i>
+      </button>
+      <button id="adminIntroSkip" class="aic-btn">
+        <i class="fas fa-forward"></i> Lewati
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== SUCCESS CELEBRATION ==================== -->
+  <div id="celebrateOverlay" class="celebrate-overlay" style="display:none;">
+    <div class="celebrate-badge">
+      <div class="celebrate-icon"><i class="fas fa-check"></i></div>
+      <h3>Akun AM Prem Berhasil Dibuat!</h3>
+      <p>Lisensi Alight Motion Premium kamu sudah aktif dan siap dipakai.</p>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
